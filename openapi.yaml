@@ -1,0 +1,391 @@
+openapi: 3.0.3
+info:
+  title: Blog API – Authors & Posts
+  description: |
+    API REST para gestión de authors y posts.
+    Desarrollada con Node.js + Express + PostgreSQL.
+  version: 1.0.0
+  contact:
+    name: Equipo de Desarrollo
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor local
+  - url: https://tu-app.up.railway.app
+    description: Producción (Railway)
+
+tags:
+  - name: Health
+    description: Estado del servidor
+  - name: Authors
+    description: Operaciones CRUD sobre autores
+  - name: Posts
+    description: Operaciones CRUD sobre posts
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: Servidor activo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  # ─── AUTHORS ─────────────────────────────────────────────────
+  /authors:
+    get:
+      tags: [Authors]
+      summary: Listar todos los authors
+      responses:
+        '200':
+          description: Lista de authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [Authors]
+      summary: Crear un nuevo author
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+            example:
+              name: Ana García
+              email: ana@example.com
+              bio: Desarrolladora full-stack
+      responses:
+        '201':
+          description: Author creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /authors/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del author
+
+    get:
+      tags: [Authors]
+      summary: Obtener author por ID
+      responses:
+        '200':
+          description: Author encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      tags: [Authors]
+      summary: Actualizar un author
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '200':
+          description: Author actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      tags: [Authors]
+      summary: Eliminar un author
+      responses:
+        '204':
+          description: Author eliminado (sin contenido)
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─── POSTS ───────────────────────────────────────────────────
+  /posts:
+    get:
+      tags: [Posts]
+      summary: Listar todos los posts
+      responses:
+        '200':
+          description: Lista de posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostWithAuthor'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [Posts]
+      summary: Crear un nuevo post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+            example:
+              title: Introducción a Node.js
+              content: Node.js es un runtime de JavaScript...
+              author_id: 1
+              published: false
+      responses:
+        '201':
+          description: Post creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del post
+
+    get:
+      tags: [Posts]
+      summary: Obtener post por ID
+      responses:
+        '200':
+          description: Post encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostWithAuthor'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      tags: [Posts]
+      summary: Actualizar un post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '200':
+          description: Post actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      tags: [Posts]
+      summary: Eliminar un post
+      responses:
+        '204':
+          description: Post eliminado (sin contenido)
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /posts/author/{authorId}:
+    get:
+      tags: [Posts]
+      summary: Posts de un author con detalle del author
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del author
+      responses:
+        '200':
+          description: Posts del author
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostWithAuthor'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+# ─── SCHEMAS ─────────────────────────────────────────────────
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Ana García
+        email:
+          type: string
+          format: email
+          example: ana@example.com
+        bio:
+          type: string
+          nullable: true
+          example: Desarrolladora full-stack
+        created_at:
+          type: string
+          format: date-time
+
+    AuthorInput:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          example: Ana García
+        email:
+          type: string
+          format: email
+          example: ana@example.com
+        bio:
+          type: string
+          nullable: true
+          example: Desarrolladora full-stack
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Introducción a Node.js
+        content:
+          type: string
+          example: Node.js es un runtime...
+        author_id:
+          type: integer
+          example: 1
+        published:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+
+    PostWithAuthor:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            author_name:
+              type: string
+              example: Ana García
+            author_email:
+              type: string
+              example: ana@example.com
+
+    PostInput:
+      type: object
+      required: [title, content, author_id]
+      properties:
+        title:
+          type: string
+          example: Introducción a Node.js
+        content:
+          type: string
+          example: Node.js es un runtime...
+        author_id:
+          type: integer
+          example: 1
+        published:
+          type: boolean
+          example: false
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Descripción del error
+
+  responses:
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Author not found
+    BadRequest:
+      description: Datos de entrada inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: name is required
+    ServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Internal server error
