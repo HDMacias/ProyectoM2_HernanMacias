@@ -280,7 +280,7 @@ curl https://tu-app.up.railway.app/authors
 ### URLs Railway
 
 - **Internal URL**: `http://blog-api.railway.internal:3000` (para comunicación entre servicios en Railway)
-- **Public URL**: `https://tu-app.up.railway.app` (acceso externo)
+- **Public URL**: `https://proyectom2hernanmacias-production.up.railway.app` (acceso externo)
 
 ---
 
