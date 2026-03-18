@@ -20,6 +20,10 @@ app.get('/health', (req, res) => {
 app.use('/authors', authorsRoutes);
 app.use('/posts', postsRoutes);
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Bienvenido a la API 🚀' });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });

@@ -52,6 +52,8 @@ blog-api/
 - Node.js >= 18
 - PostgreSQL >= 14
 - npm >= 9
+- express
+
 
 ---
 
@@ -279,7 +281,6 @@ curl https://tu-app.up.railway.app/authors
 
 ### URLs Railway
 
-- **Internal URL**: `http://blog-api.railway.internal:3000` (para comunicación entre servicios en Railway)
 - **Public URL**: `https://proyectom2hernanmacias-production.up.railway.app` (acceso externo)
 
 ---
@@ -314,3 +315,8 @@ Todos los fragmentos de código generados por IA fueron **revisados, probados y 
 - Se corrigió el orden de rutas en `posts.routes.js` para que `/posts/author/:authorId` no colisione con `/posts/:id`.
 - Se ajustó el manejo de `COALESCE` en los `UPDATE` para permitir actualizaciones parciales.
 - Se verificaron los códigos de error de PostgreSQL (`23505`, `23503`) en los catch de las rutas.
+
+👤 Autor
+Proyecto desarrollado por:
+
+Hernan Macias Hernandez
